@@ -8,6 +8,8 @@ function PlayState:init()
   self.ball.x = VIRTUAL_WIDTH / 2 - 4
   self.ball.y = VIRTUAL_HEIGHT / 42
 
+  self.bricks = LevelMaker.createMap()
+
   self.pause = false
 end
 
@@ -35,12 +37,23 @@ function PlayState:update(dt)
     gSounds['paddle-hit']:play()
   end
 
+  for k, brick in pairs(self.bricks) do
+    if brick.inPlay and self.ball:collides(brick) then
+      brick:hit()
+    end
+  end
+
   if love.keyboard.wasPressed('escape') then
     love.event.quit()
   end
 end
 
 function PlayState:render()
+
+  for k, brick in pairs(self.bricks) do
+    brick:render()
+  end
+  
   self.paddle:render()
   self.ball:render()
   if self.paused then
