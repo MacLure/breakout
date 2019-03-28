@@ -10,7 +10,12 @@ function StartState:update(dt)
   if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return')then
     gSounds['confirm']:play()
     if highlighted == 1 then
-      gStateMachine:change('play')
+      gStateMachine:change('serve', {
+        paddle = Paddle(1),
+        bricks = LevelMaker.createMap(),
+        health = 3,
+        score = 0
+      })
     end
   end
   if love.keyboard.wasPressed('escape') then
@@ -31,5 +36,6 @@ function StartState:render()
     love.graphics.setColor(103, 255,255, 255)
   end
   love.graphics.printf('HIGH SCORES', 0, VIRTUAL_HEIGHT / 2 + 90, VIRTUAL_WIDTH, 'center')
+  love.graphics.setColor(255, 255, 255, 255)
 end
 

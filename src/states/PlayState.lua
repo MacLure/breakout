@@ -1,15 +1,13 @@
 PlayState = Class{__includes = BaseState}
 
-function PlayState:init()
-  self.paddle = Paddle()
-  self.ball = Ball(math.random(7))
+function PlayState:enter(params)
+  self.paddle = params.paddle
+  self.ball = params.ball
+  self.health = params.health
+  self.bricks = params.bricks
+  self.score = params.score
   self.ball.dx = math.random(-200, 200)
   self.ball.dy = math.random(-50, 60)
-  self.ball.x = VIRTUAL_WIDTH / 2 - 4
-  self.ball.y = VIRTUAL_HEIGHT / 42
-
-  self.bricks = LevelMaker.createMap()
-
   self.pause = false
 end
 
@@ -21,8 +19,7 @@ function PlayState:update(dt)
     else
       return
     end
-  elseif
-  love.keyboard.wasPressed('space') then
+  elseif love.keyboard.wasPressed('space') then
     self.paused = true
     self.paused = true
     gSounds['pause']:play()
@@ -35,12 +32,11 @@ function PlayState:update(dt)
   if self.ball:collides(self.paddle) then
     self.ball.y = self.paddle.y - 8
     self.ball.dy = -self.ball.dy
-
-  if self.ball.x < self.paddle.x + (self.paddle.width / 2) and self.paddle.dx < 0 then
-    self.ball.dx = -50 + -(8 * (self.paddle.x + self.paddle.width / 2 - self.ball.x))
-  elseif self.ball.x > self.paddle.x + (self.paddle.width / 2) and self.paddle.dx > 0 then
-    self.ball.dx = 50 + (8 * math.abs(self.paddle.x + self.paddle.width / 2 - self.ball.x))
-  end
+    if self.ball.x < self.paddle.x + (self.paddle.width / 2) and self.paddle.dx < 0 then
+      self.ball.dx = -50 + -(8 * (self.paddle.x + self.paddle.width / 2 - self.ball.x))
+    elseif self.ball.x > self.paddle.x + (self.paddle.width / 2) and self.paddle.dx > 0 then
+      self.ball.dx = 50 + (8 * math.abs(self.paddle.x + self.paddle.width / 2 - self.ball.x))
+    end
 
     gSounds['paddle-hit']:play()
   end
@@ -61,13 +57,25 @@ function PlayState:update(dt)
         self.ball.dy = -self.ball.dy
         self.ball.y = brick.y + 16
       end
+      self.ball.dy = self.ball.dy * 1.02
+      break
+    end
+  end
 
-
-
-
-
-
-
+  if self.ball.y >= VIRTUAL_HEIGHT then
+    self.health = self.health - 1
+    gSounds['hurt']:play()
+    if self.health == 0 then
+      gStateMachine:change('game-over', {
+        score = self.score
+      })
+    else
+      gStateMachine:change('serve', {
+        paddle = self.paddle,
+        bricks = self.bricks,
+        health = self.health,
+        score = self.score
+      })
     end
   end
 
@@ -84,6 +92,10 @@ function PlayState:render()
   
   self.paddle:render()
   self.ball:render()
+
+  renderScore(self.score)
+  renderHealth(self.health)
+
   if self.paused then
     love.graphics.setFont(gFonts['large'])
     love.graphics.printf('PAUSED', 0, VIRTUAL_HEIGHT / 2 -16, VIRTUAL_WIDTH, 'center')
