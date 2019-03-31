@@ -19,6 +19,7 @@ function StartState:update(dt)
         bricks = LevelMaker.createMap(1),
         health = 3,
         score = 0,
+        highScores = self.highScores,
         level = 1
       })
     else
