@@ -57,6 +57,7 @@ function love.load()
       ['start'] = function() return StartState() end,
       ['play'] = function() return PlayState() end,
       ['serve'] = function() return ServeState() end,
+      ['victory'] = function() return VictoryState() end,
       ['game-over'] = function() return GameOverState() end
 
     }
@@ -114,6 +115,12 @@ function renderHealth(health)
         love.graphics.draw(gTextures['hearts'], gFrames['hearts'][2], healthX, 4)
         healthX = healthX + 11
     end
+end
+
+function renderLevel(level)
+    love.graphics.setFont(gFonts['small'])
+    love.graphics.print('Level:', VIRTUAL_WIDTH - VIRTUAL_WIDTH / 2, 5)
+    love.graphics.printf(tostring(level), VIRTUAL_WIDTH - VIRTUAL_WIDTH / 2 + 20, 5, 40, 'center')
 end
 
 function renderScore(score)

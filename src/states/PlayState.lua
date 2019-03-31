@@ -6,6 +6,7 @@ function PlayState:enter(params)
   self.health = params.health
   self.bricks = params.bricks
   self.score = params.score
+  self.level = params.level
   self.ball.dx = math.random(-200, 200)
   self.ball.dy = math.random(-50, 60)
   self.pause = false
@@ -45,6 +46,18 @@ function PlayState:update(dt)
     if brick.inPlay and self.ball:collides(brick) then
       self.score = self.score + (brick.tier * 200 + brick.color * 25)
       brick:hit()
+
+      if self:checkVictory() then
+        gSounds['victory']:play()
+        gStateMachine:change('victory', {
+          level = self.level,
+          paddle = self.paddle,
+          health = self.health,
+          score = self.score,
+          ball = self.ball
+        })
+      end
+
       if self.ball.x + 2 < brick.x and self.ball.dx > 0 then
         self.ball.dx = -self.ball.dx
         self.ball.x = brick.x - 8
@@ -75,7 +88,8 @@ function PlayState:update(dt)
         paddle = self.paddle,
         bricks = self.bricks,
         health = self.health,
-        score = self.score
+        score = self.score,
+        level = self.level
       })
     end
   end
@@ -98,6 +112,7 @@ function PlayState:render()
   self.paddle:render()
   self.ball:render()
 
+  renderLevel(self.level)
   renderScore(self.score)
   renderHealth(self.health)
 
@@ -105,4 +120,13 @@ function PlayState:render()
     love.graphics.setFont(gFonts['large'])
     love.graphics.printf('PAUSED', 0, VIRTUAL_HEIGHT / 2 -16, VIRTUAL_WIDTH, 'center')
   end
+end
+
+function PlayState:checkVictory()
+  for k, brick in pairs(self.bricks) do
+    if brick.inPlay then
+      return false
+    end
+  end
+  return true
 end
