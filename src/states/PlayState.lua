@@ -9,7 +9,7 @@ function PlayState:enter(params)
   self.score = params.score
   self.level = params.level
   self.ball.dx = math.random(-200, 200)
-  self.ball.dy = math.random(-50, 60)
+  self.ball.dy = math.random(-50, -60)
   self.pause = false
 end
 
@@ -98,10 +98,16 @@ function PlayState:update(dt)
     end
   end
 
+  for k, brick in pairs(self.bricks) do
+    brick:update(dt)
+  end
+
   if love.keyboard.wasPressed('escape') then
     love.event.quit()
   end
 end
+
+
 
 function PlayState:render()
 
@@ -116,7 +122,6 @@ function PlayState:render()
   self.paddle:render()
   self.ball:render()
 
-  renderLevel(self.level)
   renderScore(self.score)
   renderHealth(self.health)
 

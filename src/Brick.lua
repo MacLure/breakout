@@ -81,6 +81,9 @@ function Brick:hit()
   end
 end
 
+function Brick:update(dt)
+  self.psystem:update(dt)
+end
 
 function Brick:render()
   if self.inPlay then
