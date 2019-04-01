@@ -8,6 +8,7 @@ require 'src/util'
 require 'src/Paddle'
 require 'src/Ball'
 require 'src/Brick'
+require 'src/Powerup'
 
 require 'src/states/BaseState'
 require 'src/states/PlayState'

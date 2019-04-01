@@ -36,6 +36,7 @@ function Brick:init(x, y)
   self.width = 32
   self.height = 16
   self.inPlay = true
+  self.locked = false
 
   self.psystem = love.graphics.newParticleSystem(gTextures['particle'], 64)
   self.psystem:setParticleLifetime(0.5, 1)
@@ -45,6 +46,11 @@ function Brick:init(x, y)
 end
 
 function Brick:hit()
+  if self.locked == true then
+    gSounds['brick-hit-1']:stop()
+    gSounds['brick-hit-1']:play()
+    return
+  end
 
   self.psystem:setColors(
     paletteColors[self.color].r,
@@ -87,7 +93,11 @@ end
 
 function Brick:render()
   if self.inPlay then
-    love.graphics.draw(gTextures['main'],gFrames['bricks'][1 + (self.color - 1) * 4 + self.tier], self.x, self.y)
+    local n = 1+ ((self.color- 1) * 4) + self.tier
+    -- love.graphics.draw(gTextures['main'],)
+    love.graphics.draw(gTextures['main'],
+    -- gFrames['bricks'][1 + (self.color - 1) * 4 + self.tier], self.x, self.y)
+    gFrames['bricks'][self.locked and 22 or n], self.x, self.y)
   end
 end
 
